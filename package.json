@@ -10,7 +10,9 @@
     "build-storybook": "build-storybook",
     "build": "rollup -c",
     "eslint": "eslint src/**/*",
-    "check-types": "tsc --noemit"
+    "ci:eslint-fix": "eslint src/**/* --fix",
+    "check-types": "tsc --noemit",
+    "semantic-release": "semantic-release"
   },
   "author": "Sebastian Krzyzanowski",
   "license": "ISC",
@@ -47,6 +49,7 @@
     "path": "^0.12.7",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "rollup": "^2.39.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-typescript2": "^0.29.0",
     "semantic-release": "^17.3.7",

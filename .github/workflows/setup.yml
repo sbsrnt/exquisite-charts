@@ -1,0 +1,133 @@
+name: Lint / Build / Release
+
+on:
+  pull_request:
+    branches:
+      - master
+  push:
+    branches:
+      - master
+  # allow manual triggering
+  workflow_dispatch:
+
+jobs:
+  lint_build_release:
+    name: Lint / Build / Release
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v2
+
+      - name: Install node
+        uses: actions/setup-node@v1
+
+      - name: Cache/Restore Node Modules
+        id: cache_node_modules
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install Dependencies
+        run: npm install
+        if: steps.cache_node_modules.outputs.cache-hit != 'true'
+
+      - name: Check Types
+        run: npm run check-types
+
+      - name: Lint
+        run: npm run ci:eslint-fix
+
+      - name: Commit Lint Auto-Fixes
+        uses: EndBug/add-and-commit@v7
+        with:
+          message: 'chore(lint): fix code style'
+
+      - name: Build
+        run: npm run build
+
+      - name: Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx semantic-release
+
+# Separated jobs look nicer on ui but GH doesn't support yaml anchors / step reference caching so
+# by separating the jobs we actually double the workflow time - yikes
+#
+#  build:
+#    needs: [Lint]
+#    name: Build
+#    runs-on: ubuntu-20.04
+#
+#    steps:
+#      - name: Check out Git repository
+#        uses: actions/checkout@v2
+#
+#      - name: Install node
+#        uses: actions/setup-node@v1
+#
+#      - name: Cache/Restore Node Modules
+#        id: cache_node_modules
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-node-modules
+#        with:
+#          path: '**/node_modules'
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+#          restore-keys: |
+#            ${{ runner.os }}-build-${{ env.cache-name }}-
+#            ${{ runner.os }}-build-
+#            ${{ runner.os }}-
+#
+#      - name: Install Dependencies
+#        run: npm install
+#        if: steps.cache_node_modules.outputs.cache-hit != 'true'
+#
+#      - name: Build
+#        run: npm run build
+#
+#  release:
+#    needs: [Lint, Build]
+#    name: Release
+#    runs-on: ubuntu-20.04
+#
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v2
+#        with:
+#          fetch-depth: 0
+#
+#      - name: Install Node.js
+#        uses: actions/setup-node@v1
+#
+#      - name: Cache/Restore Node Modules
+#        id: cache_node_modules
+#        uses: actions/cache@v2
+#        env:
+#          cache-name: cache-node-modules
+#        with:
+#          # npm cache files are stored in `~/.npm` on Linux/macOS
+#          path: '**/node_modules'
+#          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+#          restore-keys: |
+#            ${{ runner.os }}-build-${{ env.cache-name }}-
+#            ${{ runner.os }}-build-
+#            ${{ runner.os }}-
+#
+#      - name: Install dependencies
+#        run: npm ci
+#        if: steps.cache_node_modules.outputs.cache-hit != 'true'
+#
+#      - name: Release
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+#          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+#        run: npx semantic-release

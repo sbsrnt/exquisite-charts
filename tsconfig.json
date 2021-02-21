@@ -38,5 +38,5 @@
     "storybook-static",
     "src/**/*.stories.tsx",
     "src/**/*.test.*"
-  ],
+  ]
 }
