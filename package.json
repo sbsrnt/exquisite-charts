@@ -1,6 +1,6 @@
 {
   "name": "exquisite-charts",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Exquisite React charts",
   "main": "build/index.js",
   "module": "./build/index.es.js",
