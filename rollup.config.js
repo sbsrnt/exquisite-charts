@@ -32,4 +32,5 @@ export default {
     resolve(),
     commonjs(),
   ],
+  exclude: ['react', 'react-dom']
 };
