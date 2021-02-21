@@ -1,18 +1,12 @@
 import React, { useEffect, useRef } from 'react';
 import { select as d3select } from 'd3';
 
-import {
-  ColorScaleType,
-  D3SvgType,
-  DataType,
-  ExquisiteChartComponent,
-  GradientColorScaleType,
-} from '#types';
+import { ColorScaleType, D3SvgType, DataType, GradientColorScaleType } from '#types';
 import { createRadialGradient } from '#utils/createRadialGradient';
 
 import { createArcs, createBorderArcs, createDonut, createLabels } from './parts';
 
-type ExquisiteDonutChartProps = {
+export type ExquisiteDonutChartProps = {
   data: DataType;
   outerRadius?: number;
   innerRadius?: number;
@@ -22,14 +16,14 @@ type ExquisiteDonutChartProps = {
   gradientColorScale?: GradientColorScaleType;
 };
 
-const ExquisiteDonutChart: ExquisiteChartComponent = ({
+const ExquisiteDonutChart = ({
   data,
   innerRadius = 80,
   width = 400,
   height = 400,
   gradientColorScale,
   colorScale,
-}: ExquisiteDonutChartProps) => {
+}: ExquisiteDonutChartProps): JSX.Element => {
   if (!data) return null;
 
   const ref = useRef(null);

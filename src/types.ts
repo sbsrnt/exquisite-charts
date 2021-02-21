@@ -1,7 +1,4 @@
-import { ReactNode } from 'react';
 import * as d3 from 'd3';
-
-export type ExquisiteChartComponent<T = undefined> = (props: T) => ReactNode;
 
 /**
  * ColorScale
